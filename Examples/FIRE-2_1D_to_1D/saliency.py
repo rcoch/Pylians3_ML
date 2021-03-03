@@ -89,4 +89,5 @@ shap.summary_plot(shap_values, features=x_samples, feature_names = feature_names
 for i in range(0,model_params):
     shap.dependence_plot(i, shap_values, x_samples, feature_names=feature_names)
 
+# can also force the interaction index - by passing interaction_index=
 
