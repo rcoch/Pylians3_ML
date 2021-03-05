@@ -12,6 +12,10 @@ A1_dust_mass = np.load(data_path+'full_dustmass_arr_A1.npy')
 A1_gas_mass = np.load(data_path+'full_gasmass_arr_A1.npy')
 A1_stellar_mass = np.load(data_path+'full_stellarmass_arr_A1.npy')
 A1_skirt_850 = np.load(data_path+'flux_arr_A1.npy')
+A1_wavelengths = np.load(data_path+'wavelength_arr_A1.npy')
+A1_fluxes = np.load(data_path+'flux_orien_0_A1.npy')
+
+print ("A1_fluxes",np.shape(A1_fluxes))
 
 # scale to solar mass units
 A1_stellar_mass = A1_stellar_mass*1e10
@@ -26,6 +30,8 @@ A2_dust_mass = np.load(data_path+'full_dustmass_arr_A2.npy')
 A2_gas_mass = np.load(data_path+'full_gasmass_arr_A2.npy')
 A2_stellar_mass = np.load(data_path+'full_stellarmass_arr_A2.npy')
 A2_skirt_850 = np.load(data_path+'flux_arr_A2.npy')
+A2_wavelengths = np.load(data_path+'wavelength_arr_A2.npy')
+A2_fluxes = np.load(data_path+'flux_orien_0_A2.npy')
 
 # scale to solar mass units
 A2_stellar_mass = A2_stellar_mass*1e10
@@ -40,6 +46,8 @@ A4_dust_mass = np.load(data_path+'full_dustmass_arr_A4.npy')
 A4_gas_mass = np.load(data_path+'full_gasmass_arr_A4.npy')
 A4_stellar_mass = np.load(data_path+'full_stellarmass_arr_A4.npy')
 A4_skirt_850 = np.load(data_path+'flux_arr_A4.npy')
+A4_wavelengths = np.load(data_path+'wavelength_arr_A4.npy')
+A4_fluxes = np.load(data_path+'flux_orien_0_A4.npy')
 
 # scale to solar mass units
 A4_stellar_mass = A4_stellar_mass*1e10
@@ -54,6 +62,8 @@ A8_dust_mass = np.load(data_path+'full_dustmass_arr_A8.npy')
 A8_gas_mass = np.load(data_path+'full_gasmass_arr_A8.npy')
 A8_stellar_mass = np.load(data_path+'full_stellarmass_arr_A8.npy')
 A8_skirt_850 = np.load(data_path+'flux_arr_A8.npy')
+A8_wavelengths = np.load(data_path+'wavelength_arr_A8.npy')
+A8_fluxes = np.load(data_path+'flux_orien_0_A8.npy')
 
 # scale to solar mass units
 A8_stellar_mass = A8_stellar_mass*1e10
@@ -98,6 +108,15 @@ A_all_skirt_850_array = np.append(A1_skirt_850,A2_skirt_850)
 A_all_skirt_850_array = np.append(A_all_skirt_850_array,A4_skirt_850)
 A_all_skirt_850_array = np.append(A_all_skirt_850_array,A8_skirt_850)
 
+# necessary to specify the axis as this the wavelength and fluxes are 2d arrays
+A_all_wavelength_array = np.append(A1_wavelengths,A2_wavelengths,axis=0)
+A_all_wavelength_array = np.append(A_all_wavelength_array,A4_wavelengths,axis=0)
+A_all_wavelength_array = np.append(A_all_wavelength_array,A8_wavelengths,axis=0)
+
+A_all_fluxes_array = np.append(A1_fluxes,A2_fluxes,axis=0)
+A_all_fluxes_array = np.append(A_all_fluxes_array,A4_fluxes,axis=0)
+A_all_fluxes_array = np.append(A_all_fluxes_array,A8_fluxes,axis=0)
+
 
 for i in range(0,len(A_all_z_array)-3):
     if A_all_sfr_array[i]>-1 and A_all_sfr_10_array[i]>-1 and A_all_sfr_100_array[i]>-1 and A_all_dust_mass_array[i]>-1 and A_all_gas_mass_array[i]>-1 and A_all_stellar_mass_array[i]>-1 and A_all_skirt_850_array[i]>-1:
@@ -112,6 +131,9 @@ for i in range(0,len(A_all_z_array)-3):
         A_all_gas_mass_array = np.delete(A_all_gas_mass_array, i)
         A_all_stellar_mass_array = np.delete(A_all_stellar_mass_array, i)
         A_all_skirt_850_array = np.delete(A_all_skirt_850_array, i)
+        A_all_wavelength_array = np.delete(A_all_wavelength_array,i,axis=0)
+        A_all_fluxes_array = np.delete(A_all_fluxes_array,i,axis=0)
+
 
 # put these into a .h5 file
 hf = h5py.File('my_fire2_data.h5', 'w')
@@ -123,6 +145,9 @@ hf.create_dataset('A_all_dust_mass', data=A_all_dust_mass_array)
 hf.create_dataset('A_all_gas_mass', data=A_all_gas_mass_array)
 hf.create_dataset('A_all_stellar_mass', data=A_all_stellar_mass_array)
 hf.create_dataset('A_all_skirt_850', data=A_all_skirt_850_array)
+hf.create_dataset('A_all_wavelength', data=A_all_wavelength_array)
+hf.create_dataset('A_all_fluxes', data=A_all_fluxes_array)
+
 hf.close()
 
 my_fire2_data = "my_fire2_data.h5"
@@ -135,4 +160,9 @@ print (np.shape(A_all_z))
 print (np.shape(A_all_sfr))
 print (np.shape(A_all_sfr_10))
 
-print ("array", A_all_sfr_array)
+
+A_all_wavelength = f['A_all_wavelength']
+print ("A_all_wavelength - shape correct",np.shape(A_all_wavelength))
+
+A_all_fluxes = f['A_all_fluxes']
+print ("A_all_fluxes- shape correct",np.shape(A_all_fluxes))
