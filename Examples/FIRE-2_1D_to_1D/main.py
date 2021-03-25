@@ -24,7 +24,7 @@ epochs     = 100000
 wd         = 1e-5
 
 # name of output files
-name   = '1hd_2000_0.3_1e-5'
+name   = 'trial_1hd_2000_0.3_1e-5'
 fout   = 'losses/%s.txt'%name
 fmodel = 'models/%s.pt'%name
 ######################################################################################
@@ -73,6 +73,8 @@ for x, y in valid_loader:
         x    = x.to(device=device)
         y    = y.to(device=device)
         y_NN = model(x)
+        print ("y here", y)
+        print ("y_NN here", y_NN)
         min_valid_loss += (criterion(y_NN, y).item())*x.shape[0]
         points += x.shape[0]
 min_valid_loss /= points
@@ -95,6 +97,9 @@ for epoch in range(offset, offset+epochs):
         x = x.to(device)
         y = y.to(device)
         y_NN = model(x)
+        
+        print ("y here 2", y)
+        print ("y_NN here 2", y_NN)
 
         loss = criterion(y_NN, y)
         train_loss += (loss.item())*x.shape[0]

@@ -13,7 +13,7 @@ import pandas as pd
 
 #################################### INPUT ##########################################
 # data parameters
-fin  = 'my_fire2_data.h5'
+fin  = 'my_fire2_data_spectrum_subset.h5'
 seed = 5
 realizations = 2000
 model_params = 7
@@ -47,7 +47,7 @@ test_loader  = data.create_dataset('test', seed, fin, batch_size)
 train_loader  = data.create_dataset('train', seed, fin, batch_size)
 
 # get the parameters of the trained model
-model = architecture.model_1hl(model_params, h1, 1, dropout_rate)
+model = architecture.model_1hl(model_params, h1, 90, dropout_rate)
 
 model.load_state_dict(torch.load(fmodel, map_location=torch.device(device)))
 model.to(device=device)
@@ -65,23 +65,38 @@ print ("np.shape(x_train_array)",np.shape(x_train_array))
 
 # DeepExplainer approximates SHAP values for deep learning models.
 # Can pass the entire training set as data, but could be slow - 100 samples will give a good estimate, 1000 samples a very good estimate.
-e = shap.DeepExplainer(model,torch.from_numpy(x_train_array[np.random.choice(np.arange(len(x_train_array)), 256, replace=False)]).to(device))
+e = shap.DeepExplainer(model,torch.from_numpy(x_train_array[np.random.choice(np.arange(len(x_train_array)), 100, replace=False)]).to(device))
 
-x_samples = x_train_array[np.random.choice(np.arange(len(x_train_array)), 256, replace=False)]
+x_samples = x_train_array[np.random.choice(np.arange(len(x_train_array)), 100, replace=False)]
 
 shap_values = e.shap_values(torch.from_numpy(x_samples).to(device))
+print ("shap_values",np.shape(shap_values))
+#shap_values = shap_values[10]
 
-# print the results
-df = pd.DataFrame({
-    "mean_abs_shap": np.mean(np.abs(shap_values), axis=0),
-    "stdev_abs_shap": np.std(np.abs(shap_values), axis=0),
-    "name": feature_names
-})
-print (df)
+choice_wavelengths = [29,40,47,50,65,79,89]
+choice_indices = [0.42272,0.79484,1.58489,2.51189,25.11886,215.44347,857.69590]
 
-# make a shap summary plot. this shows from top to bottom the most important features in the model.
+'''
+shap_values = shap_values[29]
 shap.summary_plot(shap_values, features=x_samples, feature_names = feature_names)
+'''
 
+
+for index in choice_wavelengths:
+    choice_shap_values = shap_values[index]
+
+    # print the results
+    df = pd.DataFrame({
+        "mean_abs_shap": np.mean(np.abs(choice_shap_values), axis=0),
+        "stdev_abs_shap": np.std(np.abs(choice_shap_values), axis=0),
+        "name": feature_names
+    })
+    print (df)
+
+    # make a shap summary plot. this shows from top to bottom the most important features in the model.
+    shap.summary_plot(choice_shap_values, features=x_samples, feature_names = feature_names)
+
+stop
 # make shap dependence plots
 # each dot is a single row from the dataset. The x axis shows the value of the feature, and the y axis represents how much knowing that feature changes the output for the model for that sample's prediction. Vertical dispersion of data represents interaction effects.
 # the interaction index here (i.e. the color coding) is chosen automatically as what seems to be the strongest interaction.

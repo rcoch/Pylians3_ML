@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 #################################### INPUT ##########################################
 # data parameters
-fin  = 'my_fire2_data_spectrum.h5'
+fin  = 'my_fire2_data_spectrum_subset.h5'
 seed = 5
 
 # architecture parameters
@@ -80,7 +80,7 @@ for x, y in test_loader:
             modelled_spectrum = model(x[i]).numpy()
 
             plt.plot(wavelengths_correct,model(x[i]),'r-',label='NN estimate')
-            plt.plot(wavelengths_correct,y[i],'b-',label='SKIRT output, z='+str(denormed_redshift_here))
+            plt.plot(wavelengths_correct,y[i],'b-',label='SKIRT output, z='+str(np.round(denormed_redshift_here,2)))
 
             axes = plt.gca()
             axes.set_ylim([1e-6,10])

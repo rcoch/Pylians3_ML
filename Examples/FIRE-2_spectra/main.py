@@ -7,7 +7,7 @@ import architecture as architecture
 
 ##################################### INPUT ##########################################
 # data parameters
-fin  = 'my_fire2_data_spectrum.h5'
+fin  = 'my_fire2_data_spectrum_subset.h5'
 seed = 5
 
 # architecture parameters
